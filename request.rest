@@ -1,0 +1,22 @@
+GET http://localhost:5000/
+
+###
+POST http://localhost:5000/signup/
+content-type : application/json
+
+{
+    "name":"golu123",
+    "DOB":"19/09/1997",
+    "username":"golu@gmail.com",
+    "password":"9090"
+}
+
+###
+
+POST http://localhost:5000/login/
+content-type : application/json
+
+{
+    "username":"as@gmail.com",
+    "password":"1234"
+}
