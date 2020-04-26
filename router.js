@@ -1,7 +1,9 @@
+require('dotenv').config();
 const user = require('./model');
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 module.exports  = function(app){
    
@@ -20,6 +22,19 @@ module.exports  = function(app){
         });
         
     });
+
+
+    app.get('/getUser',authenticateToken,(req,res)=>{
+        console.log(req.user);
+        user.find({},(err,data)=>{
+            if(err) console.log(err)
+            else{
+                res.json(data.filter(post=> post.username===req.user.username));
+            }
+        })
+        
+    })
+
 
     app.post('/signup',async (req,res)=>{
        
@@ -49,16 +64,19 @@ module.exports  = function(app){
         }     
     });
 
+    
     app.post('/login',async (req,res)=>{
-        
-        user.findOne({username:req.body.username},(err,data)=>{
+        const username = req.body.username;
+        const password = req.body.password;
+        user.findOne({username:username},(err,data)=>{
             if(err) console.log(err);
             else{
-                bcrypt.compare(req.body.password, data.password, function(err, result) {
+                bcrypt.compare(password, data.password, function(err, result) {
                     if(result === true){
-                        res.send('login successful')
+                        const accessToken = jwt.sign({username:username},process.env.ACCESS_TOKEN_SECRET);
+                        res.json(accessToken);
                     }else{
-                        res.send('invalid user')
+                        res.send('Wrong password')
                     }
                 });
             }         
@@ -66,5 +84,19 @@ module.exports  = function(app){
         
         
     })
+
+    function authenticateToken(req,res,next){
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(' ')[1];
+       
+        console.log(token);
+
+        if(token == null) return res.sendStatus(403)
+        jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
+            if(err) return res.sendStatus(403)
+            req.user = user
+            next()
+        });
+    }
 }
 
