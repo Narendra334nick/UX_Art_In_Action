@@ -27,8 +27,8 @@ module.exports  = function(app){
             const salt = await bcrypt.genSalt();
             const hashPassword = await bcrypt.hash(req.body.password,salt)
             
-            console.log("salt:",salt)
-            console.log("hash:",hashPassword);
+            // console.log("salt:",salt)
+            // console.log("hash:",hashPassword);
 
             var newItem = new user({
                 name:req.body.name,
@@ -50,17 +50,17 @@ module.exports  = function(app){
     });
 
     app.post('/login',async (req,res)=>{
-        console.log(req.body);
         
         user.findOne({username:req.body.username},(err,data)=>{
-            console.log(bcrypt.compare(req.body.password,data.password));
             if(err) console.log(err);
             else{
-                if(bcrypt.compare(req.body.password,data.password)){
-                    res.send("login successful")
-                }else{
-                    res.send('Invalid User')
-                }   
+                bcrypt.compare(req.body.password, data.password, function(err, result) {
+                    if(result === true){
+                        res.send('login successful')
+                    }else{
+                        res.send('invalid user')
+                    }
+                });
             }         
         })
         
