@@ -5,10 +5,10 @@ POST http://localhost:5000/signup/
 content-type : application/json
 
 {
-    "name":"golu123",
+    "name":"isha gupta",
     "DOB":"19/09/1997",
-    "username":"golu@gmail.com",
-    "password":"9090"
+    "username":"isha@gmail.com",
+    "password":"0000"
 }
 
 ###
@@ -17,6 +17,29 @@ POST http://localhost:5000/login/
 content-type : application/json
 
 {
-    "username":"as@gmail.com",
-    "password":"1234"
+    "username":"nick@gmail.com",
+    "password":"9999"
+}
+
+###
+GET http://localhost:5000/getUser
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5pY2tAZ21haWwuY29tIiwiaWF0IjoxNTg5Mjc5MzMwfQ.3orwRH_SMA2_7lRtSFrQkODbTXeuAE2Mb3n1Mf4m1Ao
+
+###
+POST http://localhost:5000/addImage
+Content-Type: application/json
+
+{
+    "username":"nick@gmail.com",
+    "filename":"aaaaa.jpeg",
+    "desc":"this is amazing"
+}
+
+###
+POST http://localhost:5000/delete 
+Content-Type: application/json
+
+{
+    "username":"nick@gmail.com",
+    "id":"5eba8b4e07b68015716809ef"
 }
