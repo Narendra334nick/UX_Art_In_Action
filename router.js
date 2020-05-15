@@ -54,7 +54,7 @@ module.exports  = function(app){
 
     //get all the data
     app.get('/',(req,res)=>{
-        console.log('from /');
+        // console.log('from /');
         userdata.find({},(err,document)=>{
             if(err) console.log(err);
             else{
@@ -64,13 +64,13 @@ module.exports  = function(app){
         
     });
 
-    //getUser
+    //get a particular User-data
     app.get('/getUser',authenticateToken,(req,res)=>{
-        console.log(req.user);
+        // console.log(req.user);
         userdata.find({},(err,data)=>{
             if(err) console.log(err)
             else{
-                res.json(data.filter(post=> post.username===req.user.username));
+                res.json({doc:data.filter(post=> post.username===req.user.username)});
             }
         })
         
@@ -80,7 +80,6 @@ module.exports  = function(app){
     app.post('/image', upload.single('img'), (req, res, err) => {
         console.log('from /image');
         if (err) console.log(err)
-        console.log(req.file);
         res.status(201).send()
     })
 
@@ -173,8 +172,9 @@ module.exports  = function(app){
                 'desc':desc
                 }
             }
-        }).then(res=>{
+        }).then(resolve=>{
             console.log('data added succefully');
+            res.json({status:"success"})
         })
         .catch(err=>{
             res.json({
@@ -186,7 +186,7 @@ module.exports  = function(app){
     //deleting a user post
     app.post('/delete/',(req,res)=>{
         const {username,id} = req.body;
-        console.log(req.body);
+        // console.log(req.body);
         userdata.findOneAndUpdate({username:username},{
             $pull:{
                 userArt:{_id:id}
@@ -199,12 +199,13 @@ module.exports  = function(app){
         })
     })
    
-
+    //middle ware for authentication
     function authenticateToken(req,res,next){
+        // console.log(req.headers);
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1];
        
-        console.log(token);
+        // console.log(token);
 
         if(token == null) return res.sendStatus(403)
         jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
