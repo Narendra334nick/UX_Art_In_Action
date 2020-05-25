@@ -79,8 +79,10 @@ module.exports  = function(app){
      //upload image
     app.post('/image', upload.single('img'), (req, res, err) => {
         console.log('from /image');
-        if (err) console.log(err)
-        res.status(201).send()
+        if (err) res.status(400).json({status:"uploading image failed"});
+        else{
+            res.status(201).json({});
+        }
     })
 
     //retrieve image
@@ -142,22 +144,27 @@ module.exports  = function(app){
         const password = req.body.password;
         // console.log(req.body);
         userdata.findOne({username:username},(err,data)=>{
-            if(err) console.log(err);
+            if(err) res.status(500).json({err:`${err}`});
             else{
-                bcrypt.compare(password, data.password, function(err, result) {
-                    if(result === true){
-                        const accessToken = jwt.sign({username:username},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '1h' });
-                        res.json({
-                            token:accessToken,
-                            username:data.username,
-                            id:data._id,
-                            messgae:"login successfull"
+                // console.log(data);
+               if(data){
+                    bcrypt.compare(password, data.password, function(err, result) {
+                        if(result === true){
+                            const accessToken = jwt.sign({username:username},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '1h' });
+                            res.json({
+                                token:accessToken,
+                                username:data.username,
+                                id:data._id,
+                                messgae:"login successfull"
 
-                        });
-                    }else{
-                        res.send('Invalid User')
-                    }
-                });
+                            });
+                        }else{
+                            res.status(403).json({status:'Wrong PassWord'});
+                        }
+                    });
+               }else{
+                   res.status(406).json({status:'user not found'});
+               }
             }         
         })     
     })
