@@ -155,15 +155,15 @@ module.exports  = function(app){
                                 token:accessToken,
                                 username:data.username,
                                 id:data._id,
-                                messgae:"login successfull"
+                                message:"login successfull"
 
                             });
                         }else{
-                            res.status(403).json({status:'Wrong PassWord'});
+                            res.status(403).json({message:'Wrong PassWord'});
                         }
                     });
                }else{
-                   res.status(406).json({status:'user not found'});
+                   res.status(406).json({message:'user not found'});
                }
             }         
         })     
