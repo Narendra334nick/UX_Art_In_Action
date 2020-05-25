@@ -144,26 +144,25 @@ module.exports  = function(app){
         const password = req.body.password;
         // console.log(req.body);
         userdata.findOne({username:username},(err,data)=>{
-            if(err) res.status(500).json({err:`${err}`});
+            if(err) return res.status(500).json({err:`${err}`});
             else{
                 // console.log(data);
                if(data){
                     bcrypt.compare(password, data.password, function(err, result) {
                         if(result === true){
                             const accessToken = jwt.sign({username:username},process.env.ACCESS_TOKEN_SECRET,{ expiresIn: '1h' });
-                            res.json({
+                            return res.json({
                                 token:accessToken,
                                 username:data.username,
                                 id:data._id,
                                 message:"login successfull"
-
                             });
                         }else{
-                            res.status(403).json({message:'Wrong PassWord'});
+                            return res.status(403).json({message:'Wrong PassWord'});
                         }
                     });
                }else{
-                   res.status(406).json({message:'user not found'});
+                   return res.status(406).json({message:'user not found'});
                }
             }         
         })     
