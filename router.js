@@ -40,7 +40,7 @@ let gfs;
 conn.once('open',()=>{
     gfs = Grid(conn.db,mongoose.mongo)
     gfs.collection('uploads')
-    console.log('connection successful');
+    console.log('Grid connection successful');
 })
 
 module.exports  = function(app){
@@ -108,8 +108,7 @@ module.exports  = function(app){
 
     //signup
     app.post('/signup',async (req,res)=>{
-        // console.log(req.body)
-       
+        
         try{
             const salt = await bcrypt.genSalt();
             const hashPassword = await bcrypt.hash(req.body.password,salt)
@@ -125,19 +124,20 @@ module.exports  = function(app){
             })
 
             userdata.create(newItem,function(err){
-                if(err) console.log(err)
+                if(err) res.json({error:err.errmsg,
+                error2:'UserName already Exist '})
                 else{
                     res.send({status:"success"});
                 }
             });
 
         }catch{
-            res.status(500).send();
+            res.status(500).json({err:'error'});
         }     
     });
 
     //login
-    app.post('/login',async (req,res)=>{
+    app.post('/login',(req,res)=>{
         const username = req.body.username;
         const password = req.body.password;
         // console.log(req.body);
@@ -207,9 +207,9 @@ module.exports  = function(app){
        
         // console.log(token);
 
-        if(token == null) return res.sendStatus(403)
+        if(token == null) return res.sendStatus(403).josn({token:'token not available'});
         jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,user)=>{
-            if(err) return res.sendStatus(403)
+            if(err) return res.sendStatus(403).json({err:`${err}`})
             req.user = user
             next()
         });

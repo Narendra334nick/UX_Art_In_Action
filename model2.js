@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
        
         name:String,
         DOB:String,
-        username:String,
+        username:{
+            type: String,
+            unique: true,
+            required: true
+        },
         password:String,
        
         userArt:[{
